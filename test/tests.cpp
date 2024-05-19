@@ -9,12 +9,12 @@
 #include "TimedDoor.h"
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor door;
     MockTimerClient mockClient;
     Timer timer;
@@ -26,7 +26,8 @@ protected:
     }
 
     void TearDown() override {
-        testing::Mock::VerifyAndClearExpectations(&mockClient);
+        testing::Mock::
+            VerifyAndClearExpectations(&mockClient);
     }
 };
 
@@ -64,24 +65,28 @@ TEST_F(TimedDoorTest, OpenedExceptionThrow) {
 }
 
 TEST_F(TimedDoorTest, LockedAfterTimeoutNoException) {
-    std::this_thread::sleep_for(std::chrono::seconds(door.getTimeOut() + 1));
+    std::this_thread::sleep_for(std::
+        chrono::seconds(door.getTimeOut() + 1));
     EXPECT_NO_THROW(door.throwState());
 }
 
 TEST_F(TimedDoorTest, OpenAfterTimeoutThrowsException) {
-    std::this_thread::sleep_for(std::chrono::seconds(door.getTimeOut() + 1));
+    std::this_thread::sleep_for(std::chrono::
+        seconds(door.getTimeOut() + 1));
     door.unlock();
     EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, UnlockDoorTimeoutException) {
     door.unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(door.getTimeOut()));
+    std::this_thread::sleep_for(std::chrono::seconds
+    (door.getTimeOut()));
     EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimerCallsClientTimeout) {
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     timer.tregister(door.getTimeOut(), &mockClient);
-    std::this_thread::sleep_for(std::chrono::seconds(door.getTimeOut() + 1));
+    std::this_thread::sleep_for(std::chrono::
+        seconds(door.getTimeOut() + 1));
 }
